@@ -315,7 +315,7 @@ namespace TreasureIslandRace.Forms
             }
         }
 
-        private  void AppendLog(string message)
+        private void AppendLog(string message)
         {
             txtLog.AppendText(message + Environment.NewLine);
         }
