@@ -18,10 +18,7 @@ namespace TreasureIslandRace.Forms
         private List<Player> players = new List<Player>();
         private int currentPlayerIndex = 0;
 
-        private Panel[] playerPanels;
-        private Panel[] colorSwatches;
-        private Label[] nameLabels;
-        private Label[] coinLabels;
+        private (Panel Panel, Panel Swatch, Label Name, Label Coins)[] playerCards;
 
         private int currentDiceFace = 1;
         private float diceRotationAngle = 0f;
@@ -45,10 +42,13 @@ namespace TreasureIslandRace.Forms
             EnableDoubleBuffering(boardPanel);
             EnableDoubleBuffering(picDice);
 
-            playerPanels = new[] { playerPanel1, playerPanel2, playerPanel3, playerPanel4 };
-            colorSwatches = new[] { colorSwatch1, colorSwatch2, colorSwatch3, colorSwatch4 };
-            nameLabels = new[] { lblName1, lblName2, lblName3, lblName4 };
-            coinLabels = new[] { lblCoins1, lblCoins2, lblCoins3, lblCoins4 };
+            playerCards = new[]
+            {
+                (playerPanel1, colorSwatch1, lblName1, lblCoins1),
+                (playerPanel2, colorSwatch2, lblName2, lblCoins2),
+                (playerPanel3, colorSwatch3, lblName3, lblCoins3),
+                (playerPanel4, colorSwatch4, lblName4, lblCoins4),
+            };
 
             players = selectedPlayers;
             board.SpecialSquareTriggered += Board_SpecialSquareTriggered;
@@ -84,10 +84,16 @@ namespace TreasureIslandRace.Forms
             Graphics g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
-            DrawSeaBackground(g);
-
             int cellSize = boardPanel.Width / GridSize;
 
+            DrawSeaBackground(g);
+            DrawSquares(g, cellSize);
+            DrawPlayerTokens(g, cellSize);
+            DrawConfettiParticles(g);
+        }
+
+        private void DrawSquares(Graphics g, int cellSize)
+        {
             for (int i = 0; i < board.Squares.Count; i++)
             {
                 Point topLeft = GetCellTopLeft(i, cellSize);
@@ -97,7 +103,10 @@ namespace TreasureIslandRace.Forms
                 g.DrawRectangle(Pens.White, cellRect);
                 g.DrawString(i.ToString(), Font, Brushes.White, cellRect.X + 4, cellRect.Y + 4);
             }
+        }
 
+        private void DrawPlayerTokens(Graphics g, int cellSize)
+        {
             foreach (var player in players)
             {
                 PointF center;
@@ -120,18 +129,19 @@ namespace TreasureIslandRace.Forms
                     g.DrawEllipse(Pens.Black, tokenRect);
                 }
             }
+        }
 
+        private void DrawConfettiParticles(Graphics g)
+        {
             foreach (var particle in confettiParticles)
             {
-                g.TranslateTransform(particle.X, particle.Y);
-                g.RotateTransform(particle.Rotation);
-
-                using (Brush confettiBrush = new SolidBrush(particle.Color))
+                DrawRotated(g, particle.X, particle.Y, particle.Rotation, () =>
                 {
-                    g.FillRectangle(confettiBrush, -4, -4, 8, 8);
-                }
-
-                g.ResetTransform();
+                    using (Brush confettiBrush = new SolidBrush(particle.Color))
+                    {
+                        g.FillRectangle(confettiBrush, particle.X - 4, particle.Y - 4, 8, 8);
+                    }
+                });
             }
         }
 
@@ -286,19 +296,21 @@ namespace TreasureIslandRace.Forms
 
         private void UpdatePlayerCards()
         {
-            for (int i = 0; i < playerPanels.Length; i++)
+            for (int i = 0; i < playerCards.Length; i++)
             {
+                var card = playerCards[i];
+
                 if (i < players.Count)
                 {
-                    playerPanels[i].Visible = true;
-                    nameLabels[i].Text = players[i].Name;
-                    coinLabels[i].Text = $"מטבעות: {players[i].Coins}";
-                    colorSwatches[i].BackColor = players[i].TokenColor;
-                    playerPanels[i].BackColor = (i == currentPlayerIndex) ? Color.LightYellow : SystemColors.Control;
+                    card.Panel.Visible = true;
+                    card.Name.Text = players[i].Name;
+                    card.Coins.Text = $"מטבעות: {players[i].Coins}";
+                    card.Swatch.BackColor = players[i].TokenColor;
+                    card.Panel.BackColor = (i == currentPlayerIndex) ? Color.LightYellow : SystemColors.Control;
                 }
                 else
                 {
-                    playerPanels[i].Visible = false;
+                    card.Panel.Visible = false;
                 }
             }
         }
@@ -306,6 +318,15 @@ namespace TreasureIslandRace.Forms
         private void AppendLog(string message)
         {
             txtLog.AppendText(message + Environment.NewLine);
+        }
+
+        private void DrawRotated(Graphics g, float centerX, float centerY, float angleDegrees, Action draw)
+        {
+            g.TranslateTransform(centerX, centerY);
+            g.RotateTransform(angleDegrees);
+            g.TranslateTransform(-centerX, -centerY);
+            draw();
+            g.ResetTransform();
         }
 
         private static void EnableDoubleBuffering(Control control)
@@ -415,20 +436,17 @@ namespace TreasureIslandRace.Forms
             Rectangle area = picDice.ClientRectangle;
             area.Inflate(-4, -4);
 
-            g.TranslateTransform(picDice.Width / 2f, picDice.Height / 2f);
-            g.RotateTransform(diceRotationAngle);
-            g.TranslateTransform(-picDice.Width / 2f, -picDice.Height / 2f);
-
-            using (var diceBrush = new SolidBrush(Color.White))
-            using (var diceBorderPen = new Pen(Color.Black, 2))
+            DrawRotated(g, picDice.Width / 2f, picDice.Height / 2f, diceRotationAngle, () =>
             {
-                g.FillRectangle(diceBrush, area);
-                g.DrawRectangle(diceBorderPen, area);
-            }
+                using (var diceBrush = new SolidBrush(Color.White))
+                using (var diceBorderPen = new Pen(Color.Black, 2))
+                {
+                    g.FillRectangle(diceBrush, area);
+                    g.DrawRectangle(diceBorderPen, area);
+                }
 
-            DrawDicePips(g, area, currentDiceFace);
-
-            g.ResetTransform();
+                DrawDicePips(g, area, currentDiceFace);
+            });
         }
 
         private void DrawDicePips(Graphics g, Rectangle area, int face)

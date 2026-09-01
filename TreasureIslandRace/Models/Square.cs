@@ -9,7 +9,6 @@
             Index = index;
         }
 
-        // הפולימורפיזם של הפרויקט: כל תת-מחלקה מממשת את זה אחרת TODO - delete
         public abstract void ApplyEffect(Player player);
 
         public abstract string Description { get; }
