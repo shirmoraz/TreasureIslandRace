@@ -23,9 +23,27 @@ namespace TreasureIslandRace.Forms
         private Label[] nameLabels;
         private Label[] coinLabels;
 
+        private int currentDiceFace = 1;
+        private float diceRotationAngle = 0f;
+        private int diceAnimationTicksLeft;
+        private readonly Random animationRandom = new Random();
+
+        private const int MoveAnimationTotalTicks = 15;
+        private Player animatingPlayer = null;
+        private PointF animatingPixelPosition;
+        private PointF moveAnimationStart;
+        private PointF moveAnimationEnd;
+        private int moveAnimationTicksLeft;
+
+        private readonly List<ConfettiParticle> confettiParticles = new List<ConfettiParticle>();
+        private int confettiTicksLeft;
+        private readonly Random confettiRandom = new Random();
+
         public MainForm(List<Player> selectedPlayers)
         {
             InitializeComponent();
+            EnableDoubleBuffering(boardPanel);
+            EnableDoubleBuffering(picDice);
 
             playerPanels = new[] { playerPanel1, playerPanel2, playerPanel3, playerPanel4 };
             colorSwatches = new[] { colorSwatch1, colorSwatch2, colorSwatch3, colorSwatch4 };
@@ -82,15 +100,38 @@ namespace TreasureIslandRace.Forms
 
             foreach (var player in players)
             {
-                Point topLeft = GetCellTopLeft(player.Position, cellSize);
-                Rectangle tokenRect = new Rectangle(
-                    topLeft.X + cellSize / 4, topLeft.Y + cellSize / 4, cellSize / 2, cellSize / 2);
+                PointF center;
+                if (player == animatingPlayer)
+                {
+                    center = animatingPixelPosition;
+                }
+                else
+                {
+                    Point topLeft = GetCellTopLeft(player.Position, cellSize);
+                    center = new PointF(topLeft.X + cellSize / 2f, topLeft.Y + cellSize / 2f);
+                }
+
+                float tokenRadius = cellSize / 4f;
+                RectangleF tokenRect = new RectangleF(center.X - tokenRadius, center.Y - tokenRadius, tokenRadius * 2, tokenRadius * 2);
 
                 using (Brush tokenBrush = new SolidBrush(player.TokenColor))
                 {
                     g.FillEllipse(tokenBrush, tokenRect);
                     g.DrawEllipse(Pens.Black, tokenRect);
                 }
+            }
+
+            foreach (var particle in confettiParticles)
+            {
+                g.TranslateTransform(particle.X, particle.Y);
+                g.RotateTransform(particle.Rotation);
+
+                using (Brush confettiBrush = new SolidBrush(particle.Color))
+                {
+                    g.FillRectangle(confettiBrush, -4, -4, 8, 8);
+                }
+
+                g.ResetTransform();
             }
         }
 
@@ -169,18 +210,64 @@ namespace TreasureIslandRace.Forms
                 return;
             }
 
+            btnRollDice.Enabled = false;
+            diceAnimationTicksLeft = 10;
+            diceAnimationTimer.Start();
+        }
+
+        private void AdvanceTurn()
+        {
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
+            UpdatePlayerCards();
+            lblCurrentTurn.Text = $"תור של: {players[currentPlayerIndex].Name}";
+        }
+
+        private void FinishDiceRoll()
+        {
+            Player currentPlayer = players[currentPlayerIndex];
+
             int roll = dice.Roll();
+            currentDiceFace = roll;
+            diceRotationAngle = 0f;
+            picDice.Invalidate();
+
             AppendLog($"{currentPlayer.Name} הטיל/ה {roll}");
 
+            int cellSize = boardPanel.Width / GridSize;
+            int oldPosition = currentPlayer.Position;
+
             board.MovePlayer(currentPlayer, roll);
+            int newPosition = currentPlayer.Position;
+
+            StartMoveAnimation(currentPlayer, oldPosition, newPosition, cellSize);
+        }
+
+        private void StartMoveAnimation(Player player, int fromIndex, int toIndex, int cellSize)
+        {
+            Point fromTopLeft = GetCellTopLeft(fromIndex, cellSize);
+            Point toTopLeft = GetCellTopLeft(toIndex, cellSize);
+
+            moveAnimationStart = new PointF(fromTopLeft.X + cellSize / 2f, fromTopLeft.Y + cellSize / 2f);
+            moveAnimationEnd = new PointF(toTopLeft.X + cellSize / 2f, toTopLeft.Y + cellSize / 2f);
+
+            animatingPlayer = player;
+            animatingPixelPosition = moveAnimationStart;
+            moveAnimationTicksLeft = MoveAnimationTotalTicks;
+
             boardPanel.Invalidate();
+            moveAnimationTimer.Start();
+        }
+
+        private void AfterMoveAnimation()
+        {
+            Player currentPlayer = players[currentPlayerIndex];
 
             if (currentPlayer.Position >= Board.TotalSquares - 1)
             {
                 AppendLog($"🏆 {currentPlayer.Name} ניצח/ה!");
                 lblCurrentTurn.Text = $"{currentPlayer.Name} ניצח/ה!";
-                btnRollDice.Enabled = false;
                 UpdatePlayerCards();
+                StartConfetti();
                 return;
             }
 
@@ -189,17 +276,12 @@ namespace TreasureIslandRace.Forms
                 currentPlayer.HasExtraTurn = false;
                 AppendLog($"{currentPlayer.Name} מקבל/ת תור נוסף (מצפן)");
                 UpdatePlayerCards();
+                btnRollDice.Enabled = true;
                 return;
             }
 
             AdvanceTurn();
-        }
-
-        private void AdvanceTurn()
-        {
-            currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
-            UpdatePlayerCards();
-            lblCurrentTurn.Text = $"תור של: {players[currentPlayerIndex].Name}";
+            btnRollDice.Enabled = true;
         }
 
         private void UpdatePlayerCards()
@@ -224,6 +306,16 @@ namespace TreasureIslandRace.Forms
         private void AppendLog(string message)
         {
             txtLog.AppendText(message + Environment.NewLine);
+        }
+
+        private static void EnableDoubleBuffering(Control control)
+        {
+            typeof(Control).InvokeMember(
+                "DoubleBuffered",
+                System.Reflection.BindingFlags.SetProperty | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic,
+                null,
+                control,
+                new object[] { true });
         }
 
         private void Board_SpecialSquareTriggered(object sender, SquareTriggeredEventArgs e)
@@ -299,6 +391,155 @@ namespace TreasureIslandRace.Forms
         private void newGameMenuItem_Click(object sender, EventArgs e)
         {
             Application.Restart();
+        }
+
+        private void diceAnimationTimer_Tick(object sender, EventArgs e)
+        {
+            currentDiceFace = animationRandom.Next(1, 7);
+            diceRotationAngle = animationRandom.Next(-15, 16);
+            picDice.Invalidate();
+
+            diceAnimationTicksLeft--;
+            if (diceAnimationTicksLeft <= 0)
+            {
+                diceAnimationTimer.Stop();
+                FinishDiceRoll();
+            }
+        }
+
+        private void picDice_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+
+            Rectangle area = picDice.ClientRectangle;
+            area.Inflate(-4, -4);
+
+            g.TranslateTransform(picDice.Width / 2f, picDice.Height / 2f);
+            g.RotateTransform(diceRotationAngle);
+            g.TranslateTransform(-picDice.Width / 2f, -picDice.Height / 2f);
+
+            using (var diceBrush = new SolidBrush(Color.White))
+            using (var diceBorderPen = new Pen(Color.Black, 2))
+            {
+                g.FillRectangle(diceBrush, area);
+                g.DrawRectangle(diceBorderPen, area);
+            }
+
+            DrawDicePips(g, area, currentDiceFace);
+
+            g.ResetTransform();
+        }
+
+        private void DrawDicePips(Graphics g, Rectangle area, int face)
+        {
+            int pipSize = area.Width / 5;
+            int cellW = area.Width / 3;
+            int cellH = area.Height / 3;
+
+            Point[] grid = new Point[9];
+            for (int r = 0; r < 3; r++)
+                for (int c = 0; c < 3; c++)
+                    grid[r * 3 + c] = new Point(area.X + c * cellW + cellW / 2, area.Y + r * cellH + cellH / 2);
+
+            int[][] layouts =
+            {
+                new[] { 4 },
+                new[] { 0, 8 },
+                new[] { 0, 4, 8 },
+                new[] { 0, 2, 6, 8 },
+                new[] { 0, 2, 4, 6, 8 },
+                new[] { 0, 2, 3, 5, 6, 8 }
+            };
+
+            int[] pips = layouts[Math.Max(1, Math.Min(6, face)) - 1];
+
+            using (var pipBrush = new SolidBrush(Color.Black))
+            {
+                foreach (int idx in pips)
+                {
+                    Point center = grid[idx];
+                    g.FillEllipse(pipBrush, center.X - pipSize / 2, center.Y - pipSize / 2, pipSize, pipSize);
+                }
+            }
+        }
+
+        private void moveAnimationTimer_Tick(object sender, EventArgs e)
+        {
+            moveAnimationTicksLeft--;
+            float t = 1f - (moveAnimationTicksLeft / (float)MoveAnimationTotalTicks);
+
+            float x = moveAnimationStart.X + (moveAnimationEnd.X - moveAnimationStart.X) * t;
+            float y = moveAnimationStart.Y + (moveAnimationEnd.Y - moveAnimationStart.Y) * t;
+
+            float arcHeight = 40f;
+            y -= arcHeight * (float)Math.Sin(t * Math.PI);
+
+            animatingPixelPosition = new PointF(x, y);
+            boardPanel.Invalidate();
+
+            if (moveAnimationTicksLeft <= 0)
+            {
+                moveAnimationTimer.Stop();
+                animatingPlayer = null;
+                boardPanel.Invalidate();
+                AfterMoveAnimation();
+            }
+        }
+
+        private void StartConfetti()
+        {
+            confettiParticles.Clear();
+
+            Color[] palette = { Color.Gold, Color.OrangeRed, Color.MediumPurple, Color.LimeGreen, Color.DeepSkyBlue, Color.HotPink };
+
+            for (int i = 0; i < 80; i++)
+            {
+                confettiParticles.Add(new ConfettiParticle
+                {
+                    X = confettiRandom.Next(0, boardPanel.Width),
+                    Y = confettiRandom.Next(-200, 0),
+                    VelocityX = (float)(confettiRandom.NextDouble() * 2 - 1),
+                    VelocityY = 2f + (float)confettiRandom.NextDouble() * 3f,
+                    Rotation = confettiRandom.Next(0, 360),
+                    RotationSpeed = (float)(confettiRandom.NextDouble() * 10 - 5),
+                    Color = palette[confettiRandom.Next(palette.Length)]
+                });
+            }
+
+            confettiTicksLeft = 120;
+            confettiTimer.Start();
+        }
+
+        private void confettiTimer_Tick(object sender, EventArgs e)
+        {
+            foreach (var particle in confettiParticles)
+            {
+                particle.X += particle.VelocityX;
+                particle.Y += particle.VelocityY;
+                particle.Rotation += particle.RotationSpeed;
+            }
+
+            boardPanel.Invalidate();
+
+            confettiTicksLeft--;
+            if (confettiTicksLeft <= 0)
+            {
+                confettiTimer.Stop();
+                confettiParticles.Clear();
+                boardPanel.Invalidate();
+            }
+        }
+
+        private class ConfettiParticle
+        {
+            public float X;
+            public float Y;
+            public float VelocityX;
+            public float VelocityY;
+            public float Rotation;
+            public float RotationSpeed;
+            public Color Color;
         }
     }
 }
