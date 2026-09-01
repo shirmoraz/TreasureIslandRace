@@ -101,7 +101,7 @@ namespace TreasureIslandRace.Forms
 
                 DrawGlossyCell(g, cellRect, GetColorsForSquare(board.Squares[i]));
                 g.DrawRectangle(Pens.White, cellRect);
-                g.DrawString(i.ToString(), Font, Brushes.White, cellRect.X + 4, cellRect.Y + 4);
+                g.DrawString(i.ToString(), Font, Brushes.Black, cellRect.X + 4, cellRect.Y + 4);
             }
         }
 
@@ -558,6 +558,12 @@ namespace TreasureIslandRace.Forms
             public float Rotation;
             public float RotationSpeed;
             public Color Color;
+        }
+
+        private void editModeMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            Text = editModeMenuItem.Checked ? "Treasure Island Race — מצב עריכה" : "Treasure Island Race";
+            lblEditModeIndicator.Visible = editModeMenuItem.Checked;
         }
     }
 }
