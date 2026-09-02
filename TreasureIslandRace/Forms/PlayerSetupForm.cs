@@ -10,10 +10,10 @@ namespace TreasureIslandRace.Forms
     {
         private static readonly (string Name, Color Value)[] AvailableColors = new[]
         {
-            ("אדום", Color.Red),
-            ("כחול", Color.Blue),
-            ("ירוק", Color.SeaGreen),
-            ("סגול", Color.Purple),
+            ("אדום", Color.Crimson),
+            ("כחול", Color.RoyalBlue),
+            ("כתום", Color.DarkOrange),
+            ("סגול", Color.MediumOrchid),
         };
 
         public List<Player> Players { get; private set; }

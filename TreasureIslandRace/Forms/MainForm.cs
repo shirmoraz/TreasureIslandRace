@@ -13,6 +13,8 @@ namespace TreasureIslandRace.Forms
     public partial class MainForm : Form
     {
         private const int GridSize = 6;
+        private const int BoardMargin = 20;
+        private const int CellGap = 4;
 
         private readonly Board board = new Board();
         private readonly Dice dice = new Dice();
@@ -81,9 +83,16 @@ namespace TreasureIslandRace.Forms
             int colInRow = squareIndex % GridSize;
             int col = (row % 2 == 0) ? colInRow : (GridSize - 1 - colInRow);
 
-            int x = col * cellSize;
-            int y = (GridSize - 1 - row) * cellSize;
+            int pitch = cellSize + CellGap;
+            int x = BoardMargin + col * pitch;
+            int y = BoardMargin + (GridSize - 1 - row) * pitch;
             return new Point(x, y);
+        }
+
+        private int GetCellSize()
+        {
+            int available = boardPanel.Width - 2 * BoardMargin - (GridSize - 1) * CellGap;
+            return available / GridSize;
         }
 
         private void boardPanel_Paint(object sender, PaintEventArgs e)
@@ -91,7 +100,7 @@ namespace TreasureIslandRace.Forms
             Graphics g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
-            int cellSize = boardPanel.Width / GridSize;
+            int cellSize = GetCellSize();
 
             DrawSeaBackground(g);
             DrawSquares(g, cellSize);
@@ -106,8 +115,16 @@ namespace TreasureIslandRace.Forms
                 Point topLeft = GetCellTopLeft(i, cellSize);
                 Rectangle cellRect = new Rectangle(topLeft.X, topLeft.Y, cellSize, cellSize);
 
-                DrawGlossyCell(g, cellRect, GetColorsForSquare(board.Squares[i]));
-                g.DrawRectangle(Pens.White, cellRect);
+                using (Brush cellBrush = new SolidBrush(GetColorForSquare(board.Squares[i])))
+                {
+                    g.FillRectangle(cellBrush, cellRect);
+                }
+
+                using (var borderPen = new Pen(Color.SaddleBrown, 2))
+                {
+                    g.DrawRectangle(borderPen, cellRect);
+                }
+
                 g.DrawString(i.ToString(), Font, Brushes.Black, cellRect.X + 4, cellRect.Y + 4);
             }
         }
@@ -127,7 +144,7 @@ namespace TreasureIslandRace.Forms
                     center = new PointF(topLeft.X + cellSize / 2f, topLeft.Y + cellSize / 2f);
                 }
 
-                float tokenRadius = cellSize / 4f;
+                float tokenRadius = cellSize / 6f;
                 RectangleF tokenRect = new RectangleF(center.X - tokenRadius, center.Y - tokenRadius, tokenRadius * 2, tokenRadius * 2);
 
                 using (Brush tokenBrush = new SolidBrush(player.TokenColor))
@@ -156,62 +173,36 @@ namespace TreasureIslandRace.Forms
         {
             Rectangle area = boardPanel.ClientRectangle;
 
-            using (var seaBrush = new LinearGradientBrush(
-                area, Color.FromArgb(120, 190, 220), Color.FromArgb(10, 60, 110), LinearGradientMode.Vertical))
+            using (var seaBrush = new SolidBrush(Color.SteelBlue))
             {
                 g.FillRectangle(seaBrush, area);
             }
 
-            using (var wavePen = new Pen(Color.FromArgb(60, 255, 255, 255), 2))
+            using (var waterBrush = new SolidBrush(Color.FromArgb(90, 255, 255, 255)))
             {
-                for (int waveY = 40; waveY < area.Height; waveY += 90)
+                var waterSeed = new Random(42);
+                for (int i = 0; i < 40; i++)
                 {
-                    var points = new List<Point>();
-                    for (int x = 0; x <= area.Width; x += 10)
-                        points.Add(new Point(x, waveY + (int)(8 * Math.Sin(x / 20.0))));
-                    if (points.Count > 1)
-                        g.DrawLines(wavePen, points.ToArray());
-                }
-            }
-
-            using (var bubbleBrush = new SolidBrush(Color.FromArgb(50, 255, 255, 255)))
-            {
-                var bubbleSeed = new Random(42);
-                for (int i = 0; i < 25; i++)
-                {
-                    int bx = bubbleSeed.Next(area.Width);
-                    int by = bubbleSeed.Next(area.Height);
-                    int br = bubbleSeed.Next(3, 10);
-                    g.FillEllipse(bubbleBrush, bx, by, br, br);
+                    int ex = waterSeed.Next(area.Width);
+                    int ey = waterSeed.Next(area.Height);
+                    int ew = waterSeed.Next(20, 50);
+                    int eh = ew / 3;
+                    g.FillEllipse(waterBrush, ex, ey, ew, eh);
                 }
             }
         }
 
-        private (Color Top, Color Bottom) GetColorsForSquare(Square square)
+        private Color GetColorForSquare(Square square)
         {
             switch (square)
             {
-                case ShipSquare _: return (Color.LightSkyBlue, Color.DodgerBlue);
-                case WhirlpoolSquare _: return (Color.MediumSlateBlue, Color.DarkSlateBlue);
-                case PortalSquare _: return (Color.Plum, Color.MediumPurple);
-                case TrapSquare _: return (Color.LightCoral, Color.IndianRed);
-                case CompassSquare _: return (Color.Khaki, Color.Gold);
-                case TreasureSquare _: return (Color.PaleGreen, Color.SeaGreen);
-                default: return (Color.White, Color.LightSkyBlue);
-            }
-        }
-
-        private void DrawGlossyCell(Graphics g, Rectangle rect, (Color Top, Color Bottom) colors)
-        {
-            using (var fillBrush = new LinearGradientBrush(rect, colors.Top, colors.Bottom, LinearGradientMode.Vertical))
-            {
-                g.FillRectangle(fillBrush, rect);
-            }
-
-            Rectangle glossRect = new Rectangle(rect.X + 2, rect.Y + 2, rect.Width - 4, rect.Height / 3);
-            using (var glossBrush = new SolidBrush(Color.FromArgb(70, 255, 255, 255)))
-            {
-                g.FillEllipse(glossBrush, glossRect);
+                case ShipSquare _: return Color.LightSkyBlue;
+                case WhirlpoolSquare _: return Color.MediumPurple;
+                case PortalSquare _: return Color.HotPink;
+                case TrapSquare _: return Color.IndianRed;
+                case CompassSquare _: return Color.MediumSeaGreen;
+                case TreasureSquare _: return Color.Gold;
+                default: return Color.Wheat;
             }
         }
 
@@ -251,7 +242,7 @@ namespace TreasureIslandRace.Forms
 
             AppendLog($"{currentPlayer.Name} הטיל/ה {roll}");
 
-            int cellSize = boardPanel.Width / GridSize;
+            int cellSize = GetCellSize();
             int oldPosition = currentPlayer.Position;
 
             board.MovePlayer(currentPlayer, roll);
@@ -358,8 +349,9 @@ namespace TreasureIslandRace.Forms
 
         private int GetSquareIndexAt(Point clickLocation, int cellSize)
         {
-            int col = clickLocation.X / cellSize;
-            int rowFromTop = clickLocation.Y / cellSize;
+            int pitch = cellSize + CellGap;
+            int col = (clickLocation.X - BoardMargin) / pitch;
+            int rowFromTop = (clickLocation.Y - BoardMargin) / pitch;
             int row = GridSize - 1 - rowFromTop;
 
             int colInRow = (row % 2 == 0) ? col : (GridSize - 1 - col);
@@ -370,7 +362,7 @@ namespace TreasureIslandRace.Forms
         {
             if (!editModeMenuItem.Checked) return;
 
-            int cellSize = boardPanel.Width / GridSize;
+            int cellSize = GetCellSize();
             int index = GetSquareIndexAt(e.Location, cellSize);
 
             if (index < 0 || index >= board.Squares.Count) return;
