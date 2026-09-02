@@ -6,6 +6,7 @@ using TreasureIslandRace.Models;
 using TreasureIslandRace.Game;
 using TreasureIslandRace.Persistence;
 using System.Drawing.Drawing2D;
+using System.Media;
 
 namespace TreasureIslandRace.Forms
 {
@@ -36,6 +37,11 @@ namespace TreasureIslandRace.Forms
         private int confettiTicksLeft;
         private readonly Random confettiRandom = new Random();
 
+        private readonly SoundPlayer gameStartSound = new SoundPlayer(@"Sounds\game-start.wav");
+        private readonly SoundPlayer diceSound = new SoundPlayer(@"Sounds\dice.wav");
+        private readonly SoundPlayer winSound = new SoundPlayer(@"Sounds\orchestral-win.wav");
+        private readonly SoundPlayer achievementSound = new SoundPlayer(@"Sounds\achievement.wav");
+
         public MainForm(List<Player> selectedPlayers)
         {
             InitializeComponent();
@@ -56,6 +62,7 @@ namespace TreasureIslandRace.Forms
             SetupBoardSquares();
             UpdatePlayerCards();
             lblCurrentTurn.Text = $"תור של: {players[currentPlayerIndex].Name}";
+            gameStartSound.Play();
         }
 
         private void SetupBoardSquares()
@@ -223,6 +230,7 @@ namespace TreasureIslandRace.Forms
             btnRollDice.Enabled = false;
             diceAnimationTicksLeft = 10;
             diceAnimationTimer.Start();
+            diceSound.Play();
         }
 
         private void AdvanceTurn()
@@ -278,6 +286,7 @@ namespace TreasureIslandRace.Forms
                 lblCurrentTurn.Text = $"{currentPlayer.Name} ניצח/ה!";
                 UpdatePlayerCards();
                 StartConfetti();
+                winSound.Play();
                 return;
             }
 
@@ -342,6 +351,9 @@ namespace TreasureIslandRace.Forms
         private void Board_SpecialSquareTriggered(object sender, SquareTriggeredEventArgs e)
         {
             AppendLog($"↳ {e.Player.Name} נחת/ה על {e.Square.Description}");
+
+            if (e.Square is TreasureSquare)
+                achievementSound.Play();
         }
 
         private int GetSquareIndexAt(Point clickLocation, int cellSize)
