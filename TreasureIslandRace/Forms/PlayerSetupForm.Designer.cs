@@ -160,10 +160,11 @@
             // 
             lblError.ForeColor = Color.Red;
             lblError.LiveSetting = System.Windows.Forms.Automation.AutomationLiveSetting.Polite;
-            lblError.Location = new Point(12, 260);
+            lblError.Location = new Point(20, 265);
             lblError.Name = "lblError";
             lblError.Size = new Size(380, 20);
             lblError.TabIndex = 12;
+            lblError.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // btnStartGame
             // 
