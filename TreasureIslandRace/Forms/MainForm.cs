@@ -215,6 +215,7 @@ namespace TreasureIslandRace.Forms
                 currentPlayer.MissNextTurn = false;
                 AppendLog($"{currentPlayer.Name} מפספס/ת תור (מלכודת)");
                 AdvanceTurn();
+                ScheduleAutomaticTurn();
                 return;
             }
 
@@ -307,11 +308,13 @@ namespace TreasureIslandRace.Forms
                 AppendLog($"{currentPlayer.Name} מקבל/ת תור נוסף (מצפן)");
                 UpdatePlayerCards();
                 btnRollDice.Enabled = true;
+                ScheduleAutomaticTurn(); 
                 return;
             }
 
             AdvanceTurn();
             btnRollDice.Enabled = true;
+            ScheduleAutomaticTurn(); 
         }
 
         private void UpdatePlayerCards()
@@ -613,5 +616,29 @@ namespace TreasureIslandRace.Forms
         private void btnRemovePlayer2_Click(object sender, EventArgs e) => RemovePlayer(1);
         private void btnRemovePlayer3_Click(object sender, EventArgs e) => RemovePlayer(2);
         private void btnRemovePlayer4_Click(object sender, EventArgs e) => RemovePlayer(3);
+
+        private void autoModeMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            if (autoModeMenuItem.Checked)
+                ScheduleAutomaticTurn();
+            else
+                autoPlayTimer.Stop();
+        }
+
+        private void ScheduleAutomaticTurn()
+        {
+            autoPlayTimer.Stop();
+
+            if (autoModeMenuItem.Checked && btnRollDice.Enabled)
+                autoPlayTimer.Start();
+        }
+
+        private void autoPlayTimer_Tick(object sender, EventArgs e)
+        {
+            autoPlayTimer.Stop();
+
+            if (autoModeMenuItem.Checked && btnRollDice.Enabled)
+                btnRollDice.PerformClick();
+        }
     }
 }

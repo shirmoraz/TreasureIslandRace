@@ -38,6 +38,7 @@
             exitMenuItem = new ToolStripMenuItem();
             לוחToolStripMenuItem = new ToolStripMenuItem();
             editModeMenuItem = new ToolStripMenuItem();
+            autoModeMenuItem = new ToolStripMenuItem();
             boardPanel = new Panel();
             playersPanel = new Panel();
             playerPanel4 = new Panel();
@@ -70,6 +71,7 @@
             confettiTimer = new System.Windows.Forms.Timer(components);
             lblEditModeIndicator = new Label();
             btnEditHelp = new Button();
+            autoPlayTimer = new System.Windows.Forms.Timer(components);
             menuStrip1.SuspendLayout();
             playersPanel.SuspendLayout();
             playerPanel4.SuspendLayout();
@@ -85,7 +87,8 @@
             menuStrip1.Items.AddRange(new ToolStripItem[] { קובץToolStripMenuItem, לוחToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(999, 24);
+            menuStrip1.Padding = new Padding(9, 3, 0, 3);
+            menuStrip1.Size = new Size(1427, 35);
             menuStrip1.TabIndex = 0;
             menuStrip1.Text = "menuStrip1";
             // 
@@ -93,64 +96,73 @@
             // 
             קובץToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newGameMenuItem, saveMenuItem, loadMenuItem, toolStripSeparator1, exitMenuItem });
             קובץToolStripMenuItem.Name = "קובץToolStripMenuItem";
-            קובץToolStripMenuItem.Size = new Size(44, 20);
+            קובץToolStripMenuItem.Size = new Size(65, 29);
             קובץToolStripMenuItem.Text = "קובץ";
             // 
             // newGameMenuItem
             // 
             newGameMenuItem.Name = "newGameMenuItem";
-            newGameMenuItem.Size = new Size(133, 22);
+            newGameMenuItem.Size = new Size(204, 34);
             newGameMenuItem.Text = "משחק חדש";
             newGameMenuItem.Click += newGameMenuItem_Click;
             // 
             // saveMenuItem
             // 
             saveMenuItem.Name = "saveMenuItem";
-            saveMenuItem.Size = new Size(133, 22);
+            saveMenuItem.Size = new Size(204, 34);
             saveMenuItem.Text = "שמור";
             saveMenuItem.Click += saveMenuItem_Click;
             // 
             // loadMenuItem
             // 
             loadMenuItem.Name = "loadMenuItem";
-            loadMenuItem.Size = new Size(133, 22);
+            loadMenuItem.Size = new Size(204, 34);
             loadMenuItem.Text = "טען";
             loadMenuItem.Click += loadMenuItem_Click;
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(130, 6);
+            toolStripSeparator1.Size = new Size(201, 6);
             // 
             // exitMenuItem
             // 
             exitMenuItem.Name = "exitMenuItem";
-            exitMenuItem.Size = new Size(133, 22);
+            exitMenuItem.Size = new Size(204, 34);
             exitMenuItem.Text = "יציאה";
             exitMenuItem.Click += exitMenuItem_Click;
             // 
             // לוחToolStripMenuItem
             // 
-            לוחToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { editModeMenuItem });
+            לוחToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { editModeMenuItem, autoModeMenuItem });
             לוחToolStripMenuItem.Name = "לוחToolStripMenuItem";
-            לוחToolStripMenuItem.Size = new Size(37, 20);
+            לוחToolStripMenuItem.Size = new Size(55, 29);
             לוחToolStripMenuItem.Text = "לוח";
             // 
             // editModeMenuItem
             // 
             editModeMenuItem.CheckOnClick = true;
             editModeMenuItem.Name = "editModeMenuItem";
-            editModeMenuItem.Size = new Size(131, 22);
+            editModeMenuItem.Size = new Size(214, 34);
             editModeMenuItem.Text = "מצב עריכה";
             editModeMenuItem.CheckedChanged += editModeMenuItem_CheckedChanged;
+            // 
+            // autoModeMenuItem
+            // 
+            autoModeMenuItem.CheckOnClick = true;
+            autoModeMenuItem.Name = "autoModeMenuItem";
+            autoModeMenuItem.Size = new Size(214, 34);
+            autoModeMenuItem.Text = "מצב אוטומטי";
+            autoModeMenuItem.CheckedChanged += autoModeMenuItem_CheckedChanged;
             // 
             // boardPanel
             // 
             boardPanel.BackColor = Color.FromArgb(26, 100, 156);
             boardPanel.BorderStyle = BorderStyle.FixedSingle;
-            boardPanel.Location = new Point(12, 36);
+            boardPanel.Location = new Point(17, 60);
+            boardPanel.Margin = new Padding(4, 5, 4, 5);
             boardPanel.Name = "boardPanel";
-            boardPanel.Size = new Size(620, 620);
+            boardPanel.Size = new Size(885, 1032);
             boardPanel.TabIndex = 1;
             boardPanel.Paint += boardPanel_Paint;
             boardPanel.MouseClick += boardPanel_MouseClick_1;
@@ -162,9 +174,10 @@
             playersPanel.Controls.Add(playerPanel3);
             playersPanel.Controls.Add(playerPanel2);
             playersPanel.Controls.Add(playerPanel1);
-            playersPanel.Location = new Point(644, 36);
+            playersPanel.Location = new Point(920, 60);
+            playersPanel.Margin = new Padding(4, 5, 4, 5);
             playersPanel.Name = "playersPanel";
-            playersPanel.Size = new Size(344, 260);
+            playersPanel.Size = new Size(491, 432);
             playersPanel.TabIndex = 2;
             // 
             // playerPanel4
@@ -173,17 +186,19 @@
             playerPanel4.Controls.Add(lblCoins4);
             playerPanel4.Controls.Add(lblName4);
             playerPanel4.Controls.Add(colorSwatch4);
-            playerPanel4.Location = new Point(5, 185);
+            playerPanel4.Location = new Point(7, 308);
+            playerPanel4.Margin = new Padding(4, 5, 4, 5);
             playerPanel4.Name = "playerPanel4";
-            playerPanel4.Size = new Size(320, 55);
+            playerPanel4.Size = new Size(457, 92);
             playerPanel4.TabIndex = 3;
             // 
             // btnRemovePlayer4
             // 
             btnRemovePlayer4.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnRemovePlayer4.Location = new Point(295, 3);
+            btnRemovePlayer4.Location = new Point(421, 5);
+            btnRemovePlayer4.Margin = new Padding(4, 5, 4, 5);
             btnRemovePlayer4.Name = "btnRemovePlayer4";
-            btnRemovePlayer4.Size = new Size(22, 22);
+            btnRemovePlayer4.Size = new Size(31, 37);
             btnRemovePlayer4.TabIndex = 6;
             btnRemovePlayer4.Text = "✕";
             btnRemovePlayer4.UseVisualStyleBackColor = true;
@@ -192,26 +207,29 @@
             // lblCoins4
             // 
             lblCoins4.AutoSize = true;
-            lblCoins4.Location = new Point(36, 28);
+            lblCoins4.Location = new Point(51, 47);
+            lblCoins4.Margin = new Padding(4, 0, 4, 0);
             lblCoins4.Name = "lblCoins4";
-            lblCoins4.Size = new Size(38, 15);
+            lblCoins4.Size = new Size(59, 25);
             lblCoins4.TabIndex = 2;
             lblCoins4.Text = "label1";
             // 
             // lblName4
             // 
             lblName4.AutoSize = true;
-            lblName4.Location = new Point(36, 6);
+            lblName4.Location = new Point(51, 10);
+            lblName4.Margin = new Padding(4, 0, 4, 0);
             lblName4.Name = "lblName4";
-            lblName4.Size = new Size(38, 15);
+            lblName4.Size = new Size(59, 25);
             lblName4.TabIndex = 1;
             lblName4.Text = "label3";
             // 
             // colorSwatch4
             // 
-            colorSwatch4.Location = new Point(8, 8);
+            colorSwatch4.Location = new Point(11, 13);
+            colorSwatch4.Margin = new Padding(4, 5, 4, 5);
             colorSwatch4.Name = "colorSwatch4";
-            colorSwatch4.Size = new Size(20, 20);
+            colorSwatch4.Size = new Size(29, 33);
             colorSwatch4.TabIndex = 0;
             // 
             // playerPanel3
@@ -220,17 +238,19 @@
             playerPanel3.Controls.Add(lblCoins3);
             playerPanel3.Controls.Add(lblName3);
             playerPanel3.Controls.Add(colorSwatch3);
-            playerPanel3.Location = new Point(5, 125);
+            playerPanel3.Location = new Point(7, 208);
+            playerPanel3.Margin = new Padding(4, 5, 4, 5);
             playerPanel3.Name = "playerPanel3";
-            playerPanel3.Size = new Size(320, 55);
+            playerPanel3.Size = new Size(457, 92);
             playerPanel3.TabIndex = 2;
             // 
             // btnRemovePlayer3
             // 
             btnRemovePlayer3.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnRemovePlayer3.Location = new Point(295, 3);
+            btnRemovePlayer3.Location = new Point(421, 5);
+            btnRemovePlayer3.Margin = new Padding(4, 5, 4, 5);
             btnRemovePlayer3.Name = "btnRemovePlayer3";
-            btnRemovePlayer3.Size = new Size(22, 22);
+            btnRemovePlayer3.Size = new Size(31, 37);
             btnRemovePlayer3.TabIndex = 5;
             btnRemovePlayer3.Text = "✕";
             btnRemovePlayer3.UseVisualStyleBackColor = true;
@@ -239,26 +259,29 @@
             // lblCoins3
             // 
             lblCoins3.AutoSize = true;
-            lblCoins3.Location = new Point(36, 28);
+            lblCoins3.Location = new Point(51, 47);
+            lblCoins3.Margin = new Padding(4, 0, 4, 0);
             lblCoins3.Name = "lblCoins3";
-            lblCoins3.Size = new Size(38, 15);
+            lblCoins3.Size = new Size(59, 25);
             lblCoins3.TabIndex = 2;
             lblCoins3.Text = "label1";
             // 
             // lblName3
             // 
             lblName3.AutoSize = true;
-            lblName3.Location = new Point(36, 6);
+            lblName3.Location = new Point(51, 10);
+            lblName3.Margin = new Padding(4, 0, 4, 0);
             lblName3.Name = "lblName3";
-            lblName3.Size = new Size(38, 15);
+            lblName3.Size = new Size(59, 25);
             lblName3.TabIndex = 1;
             lblName3.Text = "label2";
             // 
             // colorSwatch3
             // 
-            colorSwatch3.Location = new Point(8, 8);
+            colorSwatch3.Location = new Point(11, 13);
+            colorSwatch3.Margin = new Padding(4, 5, 4, 5);
             colorSwatch3.Name = "colorSwatch3";
-            colorSwatch3.Size = new Size(20, 20);
+            colorSwatch3.Size = new Size(29, 33);
             colorSwatch3.TabIndex = 0;
             // 
             // playerPanel2
@@ -267,17 +290,19 @@
             playerPanel2.Controls.Add(lblCoins2);
             playerPanel2.Controls.Add(lblName2);
             playerPanel2.Controls.Add(colorSwatch2);
-            playerPanel2.Location = new Point(5, 65);
+            playerPanel2.Location = new Point(7, 108);
+            playerPanel2.Margin = new Padding(4, 5, 4, 5);
             playerPanel2.Name = "playerPanel2";
-            playerPanel2.Size = new Size(320, 55);
+            playerPanel2.Size = new Size(457, 92);
             playerPanel2.TabIndex = 1;
             // 
             // btnRemovePlayer2
             // 
             btnRemovePlayer2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnRemovePlayer2.Location = new Point(295, 3);
+            btnRemovePlayer2.Location = new Point(421, 5);
+            btnRemovePlayer2.Margin = new Padding(4, 5, 4, 5);
             btnRemovePlayer2.Name = "btnRemovePlayer2";
-            btnRemovePlayer2.Size = new Size(22, 22);
+            btnRemovePlayer2.Size = new Size(31, 37);
             btnRemovePlayer2.TabIndex = 4;
             btnRemovePlayer2.Text = "✕";
             btnRemovePlayer2.UseVisualStyleBackColor = true;
@@ -286,26 +311,29 @@
             // lblCoins2
             // 
             lblCoins2.AutoSize = true;
-            lblCoins2.Location = new Point(36, 28);
+            lblCoins2.Location = new Point(51, 47);
+            lblCoins2.Margin = new Padding(4, 0, 4, 0);
             lblCoins2.Name = "lblCoins2";
-            lblCoins2.Size = new Size(38, 15);
+            lblCoins2.Size = new Size(59, 25);
             lblCoins2.TabIndex = 2;
             lblCoins2.Text = "label1";
             // 
             // lblName2
             // 
             lblName2.AutoSize = true;
-            lblName2.Location = new Point(36, 6);
+            lblName2.Location = new Point(51, 10);
+            lblName2.Margin = new Padding(4, 0, 4, 0);
             lblName2.Name = "lblName2";
-            lblName2.Size = new Size(38, 15);
+            lblName2.Size = new Size(59, 25);
             lblName2.TabIndex = 1;
             lblName2.Text = "label1";
             // 
             // colorSwatch2
             // 
-            colorSwatch2.Location = new Point(8, 8);
+            colorSwatch2.Location = new Point(11, 13);
+            colorSwatch2.Margin = new Padding(4, 5, 4, 5);
             colorSwatch2.Name = "colorSwatch2";
-            colorSwatch2.Size = new Size(20, 20);
+            colorSwatch2.Size = new Size(29, 33);
             colorSwatch2.TabIndex = 0;
             // 
             // playerPanel1
@@ -314,17 +342,19 @@
             playerPanel1.Controls.Add(lblCoins1);
             playerPanel1.Controls.Add(lblName1);
             playerPanel1.Controls.Add(colorSwatch1);
-            playerPanel1.Location = new Point(5, 5);
+            playerPanel1.Location = new Point(7, 8);
+            playerPanel1.Margin = new Padding(4, 5, 4, 5);
             playerPanel1.Name = "playerPanel1";
-            playerPanel1.Size = new Size(320, 55);
+            playerPanel1.Size = new Size(457, 92);
             playerPanel1.TabIndex = 0;
             // 
             // btnRemovePlayer1
             // 
             btnRemovePlayer1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnRemovePlayer1.Location = new Point(295, 3);
+            btnRemovePlayer1.Location = new Point(421, 5);
+            btnRemovePlayer1.Margin = new Padding(4, 5, 4, 5);
             btnRemovePlayer1.Name = "btnRemovePlayer1";
-            btnRemovePlayer1.Size = new Size(22, 22);
+            btnRemovePlayer1.Size = new Size(31, 37);
             btnRemovePlayer1.TabIndex = 3;
             btnRemovePlayer1.Text = "✕";
             btnRemovePlayer1.UseVisualStyleBackColor = true;
@@ -333,43 +363,48 @@
             // lblCoins1
             // 
             lblCoins1.AutoSize = true;
-            lblCoins1.Location = new Point(36, 28);
+            lblCoins1.Location = new Point(51, 47);
+            lblCoins1.Margin = new Padding(4, 0, 4, 0);
             lblCoins1.Name = "lblCoins1";
-            lblCoins1.Size = new Size(38, 15);
+            lblCoins1.Size = new Size(59, 25);
             lblCoins1.TabIndex = 2;
             lblCoins1.Text = "label1";
             // 
             // lblName1
             // 
             lblName1.AutoSize = true;
-            lblName1.Location = new Point(36, 6);
+            lblName1.Location = new Point(51, 10);
+            lblName1.Margin = new Padding(4, 0, 4, 0);
             lblName1.Name = "lblName1";
-            lblName1.Size = new Size(38, 15);
+            lblName1.Size = new Size(59, 25);
             lblName1.TabIndex = 1;
             lblName1.Text = "label1";
             // 
             // colorSwatch1
             // 
-            colorSwatch1.Location = new Point(8, 8);
+            colorSwatch1.Location = new Point(11, 13);
+            colorSwatch1.Margin = new Padding(4, 5, 4, 5);
             colorSwatch1.Name = "colorSwatch1";
-            colorSwatch1.Size = new Size(20, 20);
+            colorSwatch1.Size = new Size(29, 33);
             colorSwatch1.TabIndex = 0;
             // 
             // picDice
             // 
             picDice.BorderStyle = BorderStyle.FixedSingle;
-            picDice.Location = new Point(664, 306);
+            picDice.Location = new Point(949, 510);
+            picDice.Margin = new Padding(4, 5, 4, 5);
             picDice.Name = "picDice";
-            picDice.Size = new Size(80, 80);
+            picDice.Size = new Size(113, 132);
             picDice.TabIndex = 3;
             picDice.TabStop = false;
             picDice.Paint += picDice_Paint;
             // 
             // btnRollDice
             // 
-            btnRollDice.Location = new Point(644, 406);
+            btnRollDice.Location = new Point(920, 677);
+            btnRollDice.Margin = new Padding(4, 5, 4, 5);
             btnRollDice.Name = "btnRollDice";
-            btnRollDice.Size = new Size(140, 40);
+            btnRollDice.Size = new Size(200, 67);
             btnRollDice.TabIndex = 4;
             btnRollDice.Text = "הטל קובייה 🎲";
             btnRollDice.UseVisualStyleBackColor = true;
@@ -379,20 +414,22 @@
             // 
             lblCurrentTurn.AutoSize = true;
             lblCurrentTurn.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblCurrentTurn.Location = new Point(800, 416);
+            lblCurrentTurn.Location = new Point(1143, 693);
+            lblCurrentTurn.Margin = new Padding(4, 0, 4, 0);
             lblCurrentTurn.Name = "lblCurrentTurn";
-            lblCurrentTurn.Size = new Size(40, 15);
+            lblCurrentTurn.Size = new Size(63, 25);
             lblCurrentTurn.TabIndex = 5;
             lblCurrentTurn.Text = "label1";
             // 
             // txtLog
             // 
-            txtLog.Location = new Point(644, 456);
+            txtLog.Location = new Point(920, 760);
+            txtLog.Margin = new Padding(4, 5, 4, 5);
             txtLog.Multiline = true;
             txtLog.Name = "txtLog";
             txtLog.ReadOnly = true;
             txtLog.ScrollBars = ScrollBars.Vertical;
-            txtLog.Size = new Size(344, 200);
+            txtLog.Size = new Size(490, 331);
             txtLog.TabIndex = 6;
             // 
             // notifyIcon1
@@ -420,9 +457,10 @@
             lblEditModeIndicator.BackColor = Color.FromArgb(255, 255, 192);
             lblEditModeIndicator.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lblEditModeIndicator.ForeColor = Color.FromArgb(31, 41, 55);
-            lblEditModeIndicator.Location = new Point(122, 3);
+            lblEditModeIndicator.Location = new Point(174, 5);
+            lblEditModeIndicator.Margin = new Padding(4, 0, 4, 0);
             lblEditModeIndicator.Name = "lblEditModeIndicator";
-            lblEditModeIndicator.Size = new Size(510, 30);
+            lblEditModeIndicator.Size = new Size(729, 50);
             lblEditModeIndicator.TabIndex = 7;
             lblEditModeIndicator.Text = "מצב עריכה פעיל";
             lblEditModeIndicator.TextAlign = ContentAlignment.MiddleCenter;
@@ -432,20 +470,26 @@
             // 
             btnEditHelp.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnEditHelp.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnEditHelp.Location = new Point(99, 12);
+            btnEditHelp.Location = new Point(141, 20);
+            btnEditHelp.Margin = new Padding(4, 5, 4, 5);
             btnEditHelp.Name = "btnEditHelp";
-            btnEditHelp.Size = new Size(22, 22);
+            btnEditHelp.Size = new Size(31, 37);
             btnEditHelp.TabIndex = 8;
             btnEditHelp.Text = "?";
             btnEditHelp.UseVisualStyleBackColor = true;
             btnEditHelp.Visible = false;
             btnEditHelp.Click += btnHelp_Click;
             // 
+            // autoPlayTimer
+            // 
+            autoPlayTimer.Interval = 1200;
+            autoPlayTimer.Tick += autoPlayTimer_Tick;
+            // 
             // MainForm
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(999, 661);
+            ClientSize = new Size(1427, 1102);
             Controls.Add(btnEditHelp);
             Controls.Add(lblEditModeIndicator);
             Controls.Add(txtLog);
@@ -457,6 +501,7 @@
             Controls.Add(menuStrip1);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MainMenuStrip = menuStrip1;
+            Margin = new Padding(4, 5, 4, 5);
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Treasure Island Race";
@@ -519,5 +564,7 @@
         private Button btnRemovePlayer2;
         private Button btnRemovePlayer1;
         private Button btnRemovePlayer4;
+        private ToolStripMenuItem autoModeMenuItem;
+        private System.Windows.Forms.Timer autoPlayTimer;
     }
 }
