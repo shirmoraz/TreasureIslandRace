@@ -217,7 +217,6 @@ namespace TreasureIslandRace.Forms
                 AdvanceTurn();
                 ScheduleAutomaticTurn();
                 return;
-         
             }
 
             btnRollDice.Enabled = false;
@@ -641,6 +640,5 @@ namespace TreasureIslandRace.Forms
             if (autoModeMenuItem.Checked && btnRollDice.Enabled)
                 btnRollDice.PerformClick();
         }
-
     }
 }
