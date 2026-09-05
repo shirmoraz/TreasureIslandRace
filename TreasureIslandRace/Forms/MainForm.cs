@@ -384,6 +384,9 @@ namespace TreasureIslandRace.Forms
 
             int cellSize = GetCellSize();
             int index = GetSquareIndexAt(e.Location, cellSize);
+
+
+
             if (index < 0 || index >= board.Squares.Count) return;
 
             if (e.Button == MouseButtons.Right)
