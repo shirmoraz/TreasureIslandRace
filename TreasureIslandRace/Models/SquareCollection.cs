@@ -14,6 +14,8 @@ namespace TreasureIslandRace.Models
         public void Add(Square square) => squares.Add(square);
 
         public void ReplaceAt(int index, Square newSquare) => squares[index] = newSquare;
+        
+        public void RemoveAt(int index) => squares[index] = new NormalSquare(index);
 
         public IEnumerator<Square> GetEnumerator() => squares.GetEnumerator();
 
