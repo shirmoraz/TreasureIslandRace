@@ -231,6 +231,26 @@ namespace TreasureIslandRace.Forms
             lblCurrentTurn.Text = $"תור של: {players[currentPlayerIndex].Name}";
         }
 
+        private void RemovePlayer(int index)
+        {
+            if (players.Count <= 2)
+            {
+                AppendLog("לא ניתן להסיר שחקן - נדרשים לפחות 2 שחקנים");
+                return;
+            }
+
+            string removedName = players[index].Name;
+            players.RemoveAt(index);
+
+            if (index < currentPlayerIndex) currentPlayerIndex--;
+            currentPlayerIndex %= players.Count;
+
+            AppendLog($"{removedName} הוסר/ה מהמשחק");
+            UpdatePlayerCards();
+            lblCurrentTurn.Text = $"תור של: {players[currentPlayerIndex].Name}";
+            boardPanel.Invalidate();
+        }
+
         private void FinishDiceRoll()
         {
             Player currentPlayer = players[currentPlayerIndex];
@@ -366,6 +386,13 @@ namespace TreasureIslandRace.Forms
             int index = GetSquareIndexAt(e.Location, cellSize);
 
             if (index < 0 || index >= board.Squares.Count) return;
+
+            if (e.Button == MouseButtons.Right)
+            {
+                board.Squares.RemoveAt(index);
+                boardPanel.Invalidate();
+                return;
+            }
 
             using (var editForm = new SquareEditForm(board.Squares[index]))
             {
@@ -568,6 +595,23 @@ namespace TreasureIslandRace.Forms
         {
             Text = editModeMenuItem.Checked ? "Treasure Island Race — מצב עריכה" : "Treasure Island Race";
             lblEditModeIndicator.Visible = editModeMenuItem.Checked;
+            btnEditHelp.Visible = editModeMenuItem.Checked;
         }
+
+        private void btnHelp_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "קליק ימני לאיפוס המשבצת, \n קליק שמאלי לעריכה",
+                "הסבר מצב עריכה",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information,
+                MessageBoxDefaultButton.Button1,
+                MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign);
+        }
+
+        private void btnRemovePlayer1_Click(object sender, EventArgs e) => RemovePlayer(0);
+        private void btnRemovePlayer2_Click(object sender, EventArgs e) => RemovePlayer(1);
+        private void btnRemovePlayer3_Click(object sender, EventArgs e) => RemovePlayer(2);
+        private void btnRemovePlayer4_Click(object sender, EventArgs e) => RemovePlayer(3);
     }
 }

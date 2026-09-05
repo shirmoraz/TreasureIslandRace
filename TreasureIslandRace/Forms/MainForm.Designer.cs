@@ -41,18 +41,22 @@
             boardPanel = new Panel();
             playersPanel = new Panel();
             playerPanel4 = new Panel();
+            btnRemovePlayer4 = new Button();
             lblCoins4 = new Label();
             lblName4 = new Label();
             colorSwatch4 = new Panel();
             playerPanel3 = new Panel();
+            btnRemovePlayer3 = new Button();
             lblCoins3 = new Label();
             lblName3 = new Label();
             colorSwatch3 = new Panel();
             playerPanel2 = new Panel();
+            btnRemovePlayer2 = new Button();
             lblCoins2 = new Label();
             lblName2 = new Label();
             colorSwatch2 = new Panel();
             playerPanel1 = new Panel();
+            btnRemovePlayer1 = new Button();
             lblCoins1 = new Label();
             lblName1 = new Label();
             colorSwatch1 = new Panel();
@@ -65,6 +69,7 @@
             moveAnimationTimer = new System.Windows.Forms.Timer(components);
             confettiTimer = new System.Windows.Forms.Timer(components);
             lblEditModeIndicator = new Label();
+            btnEditHelp = new Button();
             menuStrip1.SuspendLayout();
             playersPanel.SuspendLayout();
             playerPanel4.SuspendLayout();
@@ -164,6 +169,7 @@
             // 
             // playerPanel4
             // 
+            playerPanel4.Controls.Add(btnRemovePlayer4);
             playerPanel4.Controls.Add(lblCoins4);
             playerPanel4.Controls.Add(lblName4);
             playerPanel4.Controls.Add(colorSwatch4);
@@ -171,6 +177,17 @@
             playerPanel4.Name = "playerPanel4";
             playerPanel4.Size = new Size(320, 55);
             playerPanel4.TabIndex = 3;
+            // 
+            // btnRemovePlayer4
+            // 
+            btnRemovePlayer4.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnRemovePlayer4.Location = new Point(295, 3);
+            btnRemovePlayer4.Name = "btnRemovePlayer4";
+            btnRemovePlayer4.Size = new Size(22, 22);
+            btnRemovePlayer4.TabIndex = 6;
+            btnRemovePlayer4.Text = "✕";
+            btnRemovePlayer4.UseVisualStyleBackColor = true;
+            btnRemovePlayer4.Click += btnRemovePlayer4_Click;
             // 
             // lblCoins4
             // 
@@ -199,6 +216,7 @@
             // 
             // playerPanel3
             // 
+            playerPanel3.Controls.Add(btnRemovePlayer3);
             playerPanel3.Controls.Add(lblCoins3);
             playerPanel3.Controls.Add(lblName3);
             playerPanel3.Controls.Add(colorSwatch3);
@@ -206,6 +224,17 @@
             playerPanel3.Name = "playerPanel3";
             playerPanel3.Size = new Size(320, 55);
             playerPanel3.TabIndex = 2;
+            // 
+            // btnRemovePlayer3
+            // 
+            btnRemovePlayer3.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnRemovePlayer3.Location = new Point(295, 3);
+            btnRemovePlayer3.Name = "btnRemovePlayer3";
+            btnRemovePlayer3.Size = new Size(22, 22);
+            btnRemovePlayer3.TabIndex = 5;
+            btnRemovePlayer3.Text = "✕";
+            btnRemovePlayer3.UseVisualStyleBackColor = true;
+            btnRemovePlayer3.Click += btnRemovePlayer3_Click;
             // 
             // lblCoins3
             // 
@@ -234,6 +263,7 @@
             // 
             // playerPanel2
             // 
+            playerPanel2.Controls.Add(btnRemovePlayer2);
             playerPanel2.Controls.Add(lblCoins2);
             playerPanel2.Controls.Add(lblName2);
             playerPanel2.Controls.Add(colorSwatch2);
@@ -241,6 +271,17 @@
             playerPanel2.Name = "playerPanel2";
             playerPanel2.Size = new Size(320, 55);
             playerPanel2.TabIndex = 1;
+            // 
+            // btnRemovePlayer2
+            // 
+            btnRemovePlayer2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnRemovePlayer2.Location = new Point(295, 3);
+            btnRemovePlayer2.Name = "btnRemovePlayer2";
+            btnRemovePlayer2.Size = new Size(22, 22);
+            btnRemovePlayer2.TabIndex = 4;
+            btnRemovePlayer2.Text = "✕";
+            btnRemovePlayer2.UseVisualStyleBackColor = true;
+            btnRemovePlayer2.Click += btnRemovePlayer2_Click;
             // 
             // lblCoins2
             // 
@@ -269,6 +310,7 @@
             // 
             // playerPanel1
             // 
+            playerPanel1.Controls.Add(btnRemovePlayer1);
             playerPanel1.Controls.Add(lblCoins1);
             playerPanel1.Controls.Add(lblName1);
             playerPanel1.Controls.Add(colorSwatch1);
@@ -276,6 +318,17 @@
             playerPanel1.Name = "playerPanel1";
             playerPanel1.Size = new Size(320, 55);
             playerPanel1.TabIndex = 0;
+            // 
+            // btnRemovePlayer1
+            // 
+            btnRemovePlayer1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnRemovePlayer1.Location = new Point(295, 3);
+            btnRemovePlayer1.Name = "btnRemovePlayer1";
+            btnRemovePlayer1.Size = new Size(22, 22);
+            btnRemovePlayer1.TabIndex = 3;
+            btnRemovePlayer1.Text = "✕";
+            btnRemovePlayer1.UseVisualStyleBackColor = true;
+            btnRemovePlayer1.Click += btnRemovePlayer1_Click;
             // 
             // lblCoins1
             // 
@@ -367,19 +420,33 @@
             lblEditModeIndicator.BackColor = Color.FromArgb(255, 255, 192);
             lblEditModeIndicator.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lblEditModeIndicator.ForeColor = Color.FromArgb(31, 41, 55);
-            lblEditModeIndicator.Location = new Point(96, 3);
+            lblEditModeIndicator.Location = new Point(122, 3);
             lblEditModeIndicator.Name = "lblEditModeIndicator";
-            lblEditModeIndicator.Size = new Size(536, 30);
+            lblEditModeIndicator.Size = new Size(510, 30);
             lblEditModeIndicator.TabIndex = 7;
             lblEditModeIndicator.Text = "מצב עריכה פעיל";
             lblEditModeIndicator.TextAlign = ContentAlignment.MiddleCenter;
             lblEditModeIndicator.Visible = false;
+            // 
+            // btnEditHelp
+            // 
+            btnEditHelp.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnEditHelp.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnEditHelp.Location = new Point(99, 12);
+            btnEditHelp.Name = "btnEditHelp";
+            btnEditHelp.Size = new Size(22, 22);
+            btnEditHelp.TabIndex = 8;
+            btnEditHelp.Text = "?";
+            btnEditHelp.UseVisualStyleBackColor = true;
+            btnEditHelp.Visible = false;
+            btnEditHelp.Click += btnHelp_Click;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(999, 661);
+            Controls.Add(btnEditHelp);
             Controls.Add(lblEditModeIndicator);
             Controls.Add(txtLog);
             Controls.Add(lblCurrentTurn);
@@ -447,5 +514,10 @@
         private System.Windows.Forms.Timer moveAnimationTimer;
         private System.Windows.Forms.Timer confettiTimer;
         private Label lblEditModeIndicator;
+        private Button btnEditHelp;
+        private Button btnRemovePlayer3;
+        private Button btnRemovePlayer2;
+        private Button btnRemovePlayer1;
+        private Button btnRemovePlayer4;
     }
 }
