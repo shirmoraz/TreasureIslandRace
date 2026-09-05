@@ -44,8 +44,6 @@ namespace TreasureIslandRace.Forms
         private readonly SoundPlayer winSound = new SoundPlayer(@"Sounds\orchestral-win.wav");
         private readonly SoundPlayer achievementSound = new SoundPlayer(@"Sounds\achievement.wav");
 
-        private readonly ToolTip toolTip = new ToolTip();
-
         public MainForm(List<Player> selectedPlayers)
         {
             InitializeComponent();
@@ -59,11 +57,6 @@ namespace TreasureIslandRace.Forms
                 (playerPanel3, colorSwatch3, lblName3, lblCoins3),
                 (playerPanel4, colorSwatch4, lblName4, lblCoins4),
             };
-
-            toolTip.SetToolTip(boardPanel, "קליק ימני לאיפוס משבצת");
-
-            foreach (var card in playerCards)
-                toolTip.SetToolTip(card.Panel, "לחיצה ימנית להסרת שחקן");
 
             players = selectedPlayers;
             board.SpecialSquareTriggered += Board_SpecialSquareTriggered;
